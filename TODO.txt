@@ -1,0 +1,5 @@
+* Generate island made up from tiles
+* Come up with interesting terrain generation alghorithm
+* Generate towns
+* Add player character with pathfinding
+* Make towns grow / shrink depending on how its consumption is met. 
