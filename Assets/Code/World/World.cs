@@ -3,71 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class World : MonoBehaviour
 {
-    Chunk[,] _chunks;
+    static int _worldSize = Constants.Terrain.WORLD_SIZE;
+    Chunk[,]   _chunks    = new Chunk[_worldSize, _worldSize];
+
+    ChunkGenerator _chunkGenerator;
 
     void Awake()
     {
+        _chunkGenerator = new ChunkGenerator();
 
-    }
-}
-
-public class Chunk
-{
-    public readonly Vector2DInt position;
-    public Tile[,] _tiles;
-
-    readonly GameObject _viewGO;
-
-    public event Action<Chunk> OnTilesChanged;
-
-
-    public Chunk(Vector2DInt inPosition, Tile[,] inTiles, GameObject inViewGO)
-    {
-        position = inPosition;
-        _tiles = inTiles;
-
-        _viewGO = inViewGO;
-
-        OnTilesChanged?.Invoke(this);
-    }
-}
-
-public class Tile
-{
-
-}
-
-public struct Terrain
-{
-    public class Data
-    {
-        public readonly int   textureID;
-        public readonly float moveSpeedMultiplier;
-        public readonly bool  passable;
-
-
-    }
-
-    public enum Type
-    {
-        Grass,
-        Sand
+        for (int y = 0; y < _worldSize; y++)
+            for (int x = 0; x < _worldSize; x++)
+                _chunkGenerator.Generate(new Vector2DInt(x, y));
     }
 }
 
 
-public class ChunkGenerator
-{
-    GameObject GenerateBlankView()
-    {
-        return new GameObject();
-    }
 
-    int[,] GenerateUV2(Chunk inChunk)
-    {
-
-        return new int[0, 0];
-    }
-}

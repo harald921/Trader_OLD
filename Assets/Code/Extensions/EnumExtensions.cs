@@ -38,5 +38,4 @@ public static class EnumerationExtensions
                     ), ex);
         }
     }
-
 }
