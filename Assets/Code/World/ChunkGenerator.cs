@@ -18,11 +18,12 @@ public partial class ChunkGenerator
     public Chunk Generate(Vector2DInt inPosition)
     {
         Tile[,]    tiles = _dataGenerator.Generate(inPosition);
-        GameObject view  = _viewGenerator.GenerateBlank();
+        GameObject view  = _viewGenerator.GenerateBlank(inPosition); // TODO: Make this method into a "Generate" which takes in the Tiles 
 
-        Chunk newChunk = new Chunk(inPosition, tiles, view);
+        RegenerateChunkView(view, tiles);
 
-        // Regenerate chunk view UV2 whenever the tiles changes
+        Chunk newChunk = new Chunk(inPosition, tiles, view); 
+
         newChunk.OnTilesChanged += () => RegenerateChunkView(view, tiles);
 
         return newChunk;
@@ -66,26 +67,38 @@ partial class ChunkGenerator
 {
     class ViewGenerator
     {
-        readonly GameObject _blankGO;
-        readonly Mesh       _defaultMesh;
-
         readonly int _chunkSize = Constants.Terrain.CHUNK_SIZE;
 
         readonly int _vertexSize;
         readonly int _vertexCount;
 
+        readonly GameObject _templateGO;
+        readonly Mesh       _templateMesh;
+
 
         public ViewGenerator()
         {
-                
+            _vertexSize = _chunkSize * 2;
+            _vertexCount = _vertexSize * _vertexSize * 4;
 
-            _blankGO = (GameObject)Resources.Load("blank_chunk", typeof(GameObject));    
+            _templateGO = (GameObject)Resources.Load("blank_chunk", typeof(GameObject));
+
+            _templateMesh = new Mesh()
+            {
+                vertices  = GenerateVertices(),
+                triangles = GenerateTriangleIDs()
+            };
         }
 
 
-        public GameObject GenerateBlank()
+        public GameObject GenerateBlank(Vector2DInt inPosition)
         {
-            return Object.Instantiate(_blankGO);
+            GameObject newGO = Object.Instantiate(_templateGO);
+            newGO.GetComponent<MeshFilter>().mesh = Object.Instantiate(_templateMesh);
+
+            newGO.transform.position = new Vector3(inPosition.x, 0, inPosition.y) * _chunkSize;
+
+            return newGO;
         }
 
         int[] GenerateTriangleIDs()
@@ -115,6 +128,7 @@ partial class ChunkGenerator
         Vector3[] GenerateVertices()
         {
             Vector3[] vertices = new Vector3[_vertexCount];
+
             int vertexID = 0;
             for (int y = 0; y < _chunkSize; y++)
             {
