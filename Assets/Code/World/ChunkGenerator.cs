@@ -18,19 +18,19 @@ public partial class ChunkGenerator
     public Chunk Generate(Vector2DInt inPosition)
     {
         Tile[,]    tiles = _dataGenerator.Generate(inPosition);
-        GameObject view  = _viewGenerator.GenerateBlank(inPosition); // TODO: Make this method into a "Generate" which takes in the Tiles 
+        GameObject view  = _viewGenerator.GenerateBlank(inPosition); 
 
-        RegenerateChunkView(view, tiles);
+        GenerateAndSetUV2s(view, tiles);
 
         Chunk newChunk = new Chunk(inPosition, tiles, view); 
 
-        newChunk.OnTilesChanged += () => RegenerateChunkView(view, tiles);
+        newChunk.OnTilesChanged += () => GenerateAndSetUV2s(view, tiles);
 
         return newChunk;
     }
 
 
-    void RegenerateChunkView(GameObject inView, Tile[,] inTiles) =>
+    void GenerateAndSetUV2s(GameObject inView, Tile[,] inTiles) =>
         inView.GetComponent<MeshFilter>().mesh.uv2 = _viewGenerator.GenerateUV2s(inTiles);
 }
 
